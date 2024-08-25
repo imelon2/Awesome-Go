@@ -26,7 +26,6 @@ func main() {
 		Label:    "is???",
 		Validate: validate,
 	}
-
 	result1, err := prompt1.Run()
 	result2, err := prompt2.Run()
 
