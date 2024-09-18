@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 	"strings"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -10,26 +11,22 @@ import (
 )
 
 func main() {
-	// ERC20 ABI 정의
-	erc20ABI := `[{
-		"constant": false,
-		"inputs": [{"name": "to", "type": "address"},{"name": "value", "type": "uint256"}],
-		"name": "transfer",
-		"outputs": [{"name": "", "type": "bool"}],
-		"type": "function"
-	}]`
-
-	// ABI 파싱
-	parsedABI, err := abi.JSON(strings.NewReader(erc20ABI))
+	// JSON 파일을 읽음
+	fileContent, err := os.ReadFile("./abi/aggregateAbi.json")
 	if err != nil {
-		log.Fatalf("Failed to parse ABI: %v", err)
+		log.Fatalf("Failed to read ABI JSON file: %v", err)
 	}
 
+	// 파일 내용을 ABI 파싱에 전달
+	parsedABI, err := abi.JSON(strings.NewReader(string(fileContent)))
+	if err != nil {
+		log.Fatalf("Failed to get method from parsedABI: %v", err)
+	}
 	// 예시 calldata
-	calldata := common.FromHex("0xa9059cbb0000000000000000000000001c6c54f1e18e5c47dfae928aaf8779de7e09e44800000000000000000000000000000000000000000000000000000000000000a")
+	calldata := common.FromHex("0x6bf6a42d000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000013abeaf000000000000000000000000000000000000000000000000000000000ec1fa3a0000000000000000000000000000000000000000000000000000000000000001")
 	arg := calldata[4:]
 	// 함수 시그니처 추출
-	method, err := parsedABI.MethodById(common.FromHex("0xa9059cbc"))
+	method, err := parsedABI.MethodById(common.FromHex("0x6bf6a42d"))
 	if err != nil {
 		log.Fatalf("Failed to get method from calldata: %v", err)
 	}
@@ -43,7 +40,6 @@ func main() {
 	fmt.Printf("Decoded Function : %s\n", parsedABI.Methods["transfer"])
 
 	for i, data := range inter {
-
 		fmt.Printf("Decoded %s : %s\n", method.Inputs[i].Name, data)
 	}
 	// result, err := method.Inputs.Pack(inter)
