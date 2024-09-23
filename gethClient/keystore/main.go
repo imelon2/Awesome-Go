@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/ethereum/go-ethereum/accounts/keystore"
+	"github.com/ethereum/go-ethereum/crypto"
 )
 
 /*
@@ -14,8 +15,12 @@ import (
 
 func createKs() {
 	ks := keystore.NewKeyStore("./keystore", keystore.StandardScryptN, keystore.StandardScryptP)
+	// 0xa526210406df1b40c6b176cfbca08cfe6da5f4442271976e8d96eb9d413c9a35
+
+	privateKey, err := crypto.HexToECDSA("a526210406df1b40c6b176cfbca08cfe6da5f4442271976e8d96eb9d413c9a35")
 	password := ""
-	account, err := ks.NewAccount(password)
+	account, err := ks.ImportECDSA(privateKey, password)
+	// account, err := ks.NewAccount(password)
 
 	if err != nil {
 		log.Fatal(err)
@@ -52,14 +57,17 @@ func raedWallets() {
 	// a := wallets[0].Accounts()
 	a := ks.Accounts()
 
-	fmt.Println(a[2].Address)
+	fmt.Println(a[0].Address)
+	fmt.Println(a[0].URL)
+	fmt.Println(a[0].URL.Path)
+	fmt.Println(a[0].URL.Scheme)
 	fmt.Println(len(a))
 }
 
 func main() {
-	// createKs()
+	createKs()
 
 	// importKs()
 
-	raedWallets()
+	// raedWallets()
 }
